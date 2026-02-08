@@ -987,10 +987,16 @@
         tg.expand();
         tg.ready();
 
+        // User data
+        const user = tg.initDataUnsafe?.user || { id: 7949819462, first_name: 'Admin' };
+
         // API Configuration
         const urlParams = new URLSearchParams(window.location.search);
         const serverUrl = urlParams.get('server') || ''; // e.g. https://your-ngrok-url.ngrok-free.app
         const apiBase = serverUrl ? serverUrl.replace(/\/$/, '') : '';
+
+        console.log("CRITICAL DEBUG: serverUrl from query:", serverUrl);
+        console.log("CRITICAL DEBUG: apiBase:", apiBase);
 
         async function initApp() {
             // Initial UI from Telegram data
@@ -1008,7 +1014,9 @@
 
             // Fetch Real Data from DB
             try {
-                const res = await fetch(`${apiBase}/api/user/${user.id}`);
+                const res = await fetch(`${apiBase}/api/user/${user.id}`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 if (!res.ok) throw new Error("API error");
                 const result = await res.json();
                 if (result.status === 'success') {
@@ -1113,7 +1121,10 @@
             try {
                 const res = await fetch(`${apiBase}/api/chat`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
                     body: JSON.stringify({ prompt: msg, user_id: user.id })
                 });
                 const data = await res.json();

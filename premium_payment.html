@@ -300,7 +300,9 @@
             }
             // Check status
             try {
-                const res = await fetch(`${apiBase}/api/payment/status/${user_id}`);
+                const res = await fetch(`${apiBase}/api/payment/status/${user_id}`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 if (!res.ok) throw new Error("API error");
                 const data = await res.json();
                 document.getElementById('loading').style.display = 'none';

@@ -15,7 +15,9 @@ async function fetchMaterials(subject = null, level = null, materialType = null)
 
         url += params.join('&');
 
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         if (!response.ok) throw new Error('Failed to fetch materials');
 
         const data = await response.json();
@@ -29,7 +31,9 @@ async function fetchMaterials(subject = null, level = null, materialType = null)
 // Get subject statistics
 async function fetchSubjectStats(subject) {
     try {
-        const response = await fetch(`${API_BASE}/api/library/stats/${subject}`);
+        const response = await fetch(`${API_BASE}/api/library/stats/${subject}`, {
+            headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         if (!response.ok) throw new Error('Failed to fetch stats');
 
         return await response.json();
