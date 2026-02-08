@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Talaba Admin</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0f1219;
+            --bg-card: #1a1f2e;
+            --bg-input: #23293a;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --border: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Tabs */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* Cars */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-val {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(135deg, var(--accent), #4f46e5);
+            border: none;
+        }
+
+        /* Users List */
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .user-row:last-child {
+            border: none;
+        }
+
+        .user-meta h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .user-meta p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .badge.prem {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        /* Controls */
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .control-input,
+        .control-select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .control-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 10px;
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-input);
+            border-radius: 12px;
+            position: relative;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-knob {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+
+        .toggle-switch.active .toggle-knob {
+            transform: translateX(20px);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 18, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: var(--text-muted);
+            opacity: 0.6;
+            transition: 0.2s;
+        }
+
+        .nav-item.active {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        /* Modal */
+        .modal-bg {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: flex-end;
+            z-index: 200;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 24px;
+            animation: slideUp 0.3s ease;
+            border-top: 1px solid var(--border);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="tab-content active">
+        <h1>Dashboard</h1>
+        <p class="subtitle">System Overview & Stats</p>
+
+        <div class="stats-grid">
+            <div class="stat-card highlight">
+                <div class="stat-val" id="stat-total">...</div>
+                <div class="stat-label" style="color: rgba(255,255,255,0.7);">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-ai">...</div>
+                <div class="stat-label">AI Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-premium" style="color: #fbbf24;">...</div>
+                <div class="stat-label">Premium Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-status" style="color: var(--accent-green);">Online</div>
+                <div class="stat-label">System Status</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Activity Trend</h3>
+            <canvas id="chart-activity" height="120"></canvas>
+        </div>
+    </div>
+
+    <!-- USERS TAB -->
+    <div id="tab-users" class="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h1>Users</h1>
+            <div class="btn-icon" onclick="loadUsers()"><i class="bi bi-arrow-clockwise"></i></div>
+        </div>
+
+        <input type="text" class="control-input" id="search-users" placeholder="Search users..." oninput="filterUsers()"
+            style="margin-bottom: 16px;">
+
+        <div class="card" id="users-list">
+            <!-- Dynamic List -->
+            <p style="text-align: center; color: var(--text-muted);">Loading...</p>
+        </div>
+    </div>
+
+    <!-- CONTROL TAB -->
+    <div id="tab-control" class="tab-content">
+        <h1>Control</h1>
+        <p class="subtitle">Bot Configuration & Settings</p>
+
+        <div class="card">
+            <h3>AI Settings</h3>
+
+            <div class="control-group">
+                <label class="control-label">AI Provider</label>
+                <select class="control-select" id="setting-provider" onchange="saveSetting('ai_provider', this.value)">
+                    <option value="gemini">Google Gemini Pro 1.5</option>
+                    <option value="openai">OpenAI GPT-4o</option>
+                    <option value="groq">Groq (Llama 3)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Daily Request Limit (Free)</label>
+                <input type="number" class="control-input" id="setting-limit" value="10"
+                    onchange="saveSetting('daily_limit', this.value)">
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>System Status</h3>
+            <div class="toggle-row">
+                <span>AI Features Enabled</span>
+                <div class="toggle-switch active" id="toggle-ai" onclick="toggleSetting('ai_enabled')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+            <div class="toggle-row">
+                <span>Maintenance Mode</span>
+                <div class="toggle-switch" id="toggle-maint" onclick="toggleSetting('maintenance')">
+                    <div class="toggle-knob"></div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn"
+            style="background: rgba(239,68,68,0.1); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3);"
+            onclick="if(confirm('Restart Bot?')) tg.showAlert('Restarting...')">
+            <i class="bi bi-power"></i> Restart System
+        </button>
+    </div>
+
+    <!-- User Action Modal -->
+    <div class="modal-bg" id="user-modal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <h3 id="modal-username">User Actions</h3>
+            <p class="subtitle" id="modal-userid">ID: ...</p>
+
+            <div style="display: grid; gap: 10px;">
+                <button class="btn btn-primary" onclick="doAction('premium_add')">Grant Premium (30 days)</button>
+                <button class="btn" style="background: var(--bg-input);" onclick="doAction('premium_remove')">Revoke
+                    Premium</button>
+                <button class="btn" style="background: rgba(239,68,68,0.1); color: var(--accent-red);"
+                    onclick="doAction('ban')">Ban User</button>
+            </div>
+            <button class="btn" style="background: transparent; margin-top: 10px;"
+                onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('overview', this)"><i
+                class="bi bi-grid-fill"></i><span>Overview</span></div>
+        <div class="nav-item" onclick="switchTab('users', this)"><i class="bi bi-people-fill"></i><span>Users</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('control', this)"><i class="bi bi-sliders"></i><span>Control</span>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // API Configuration
+        const urlParams = new URLSearchParams(window.location.search);
+        const serverUrl = urlParams.get('server') || '';
+        const apiBase = serverUrl ? serverUrl.replace(/\/$/, '') : '';
+
+        let allUsers = [];
+        let selectedUser = null;
+
+        // Init
+        loadStats();
+        loadSettings();
+
+        // Nav
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            el.classList.add('active');
+            if (tab === 'users') loadUsers();
+            if (tab === 'control') loadSettings();
+        }
+
+        // Stats
+        async function loadStats() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/stats`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('stat-total').innerText = data.data.total;
+                    document.getElementById('stat-premium').innerText = data.data.premium;
+                    document.getElementById('stat-ai').innerText = data.data.today || 0;
+                }
+            } catch (e) { console.error("Stats load error:", e); }
+        }
+
+        // Users
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/users`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    allUsers = data.users;
+                    renderUsers(allUsers);
+                }
+            } catch (e) {
+                document.getElementById('users-list').innerHTML = '<p class="subtitle" style="text-align:center;">Failed to load users</p>';
+            }
+        }
+
+        function renderUsers(list) {
+            const container = document.getElementById('users-list');
+            container.innerHTML = '';
+            list.slice(0, 50).forEach(u => {
+                const html = `
+                <div class="user-row" onclick="openModal('${u.id}', '${u.name}')">
+                    <div class="user-meta">
+                        <h4>${u.name} ${u.is_premium ? '<span class="badge prem">PRO</span>' : ''}</h4>
+                        <p>ID: ${u.id} • ${u.username || 'No Username'}</p>
+                    </div>
+                    <div class="btn-icon"><i class="bi bi-three-dots-vertical"></i></div>
+                </div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function filterUsers() {
+            const q = document.getElementById('search-users').value.toLowerCase();
+            const filtered = allUsers.filter(u => u.name.toLowerCase().includes(q) || String(u.id).includes(q));
+            renderUsers(filtered);
+        }
+
+        // Modal
+        function openModal(id, name) {
+            selectedUser = id;
+            document.getElementById('modal-username').innerText = name;
+            document.getElementById('modal-userid').innerText = 'ID: ' + id;
+            document.getElementById('user-modal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('user-modal').style.display = 'none';
+            selectedUser = null;
+        }
+        async function doAction(action) {
+            if (!selectedUser) return;
+            tg.showAlert("Processing...");
+            try {
+                await fetch(`${apiBase}/api/admin/user/action`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: selectedUser, action: action })
+                });
+                tg.showAlert("Success!");
+                closeModal();
+                loadUsers();
+            } catch (e) { tg.showAlert("Error"); }
+        }
+
+        // Settings
+        async function loadSettings() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/settings`);
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const s = data.settings;
+                    document.getElementById('setting-provider').value = s.ai_provider;
+                    document.getElementById('setting-limit').value = s.daily_limit;
+                    setToggle('toggle-ai', s.ai_enabled === 'true');
+                    setToggle('toggle-maint', s.maintenance === 'true');
+                }
+            } catch (e) { }
+        }
+
+        async function saveSetting(key, val) {
+            await fetch(`${apiBase}/api/admin/settings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: key, value: val })
+            });
+        }
+
+        function setToggle(id, active) {
+            const el = document.getElementById(id);
+            if (active) el.classList.add('active'); else el.classList.remove('active');
+        }
+
+        async function toggleSetting(key) {
+            // Determine current state based on UI class
+            const elId = key === 'ai_enabled' ? 'toggle-ai' : 'toggle-maint';
+            const el = document.getElementById(elId);
+            const isNowActive = !el.classList.contains('active');
+
+            // Toggle UI immediately (optimistic)
+            setToggle(elId, isNowActive);
+
+            // Save
+            await saveSetting(key, isNowActive ? 'true' : 'false');
+        }
+
+        // Chart
+        new Chart(document.getElementById('chart-activity'), {
+            type: 'line',
+            data: {
+                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                datasets: [{
+                    label: 'Users',
+                    data: [12, 19, 15, 25, 22, 30, 45],
+                    borderColor: '#6366f1',
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
+            }
+        });
+
+    </script>
+</body>
+
+</html>
