@@ -1119,47 +1119,75 @@
                 if (adminItem) adminItem.style.display = 'flex';
             }
 
-            // Fetch Real Data from DB
+            // Fetch Real Data from DB (Optimized: Parallel Fetch)
+            const userFetch = fetch(`${apiBase}/api/user/${user.id}?ngrok-skip-browser-warning=1`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+            const libFetch = fetch(`${apiBase}/api/library/materials?ngrok-skip-browser-warning=1`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+            const libSubjectsFetch = fetch(`${apiBase}/api/library/subjects?ngrok-skip-browser-warning=1`, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+
+
             try {
-                const res = await fetch(`${apiBase}/api/user/${user.id}?ngrok-skip-browser-warning=1`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                if (!res.ok) throw new Error("API error");
-                const result = await res.json();
-                if (result.status === 'success') {
-                    const db = result.data;
-                    userTasks = db.deadlines || [];
+                const [userRes, libRes, libSubjectsRes] = await Promise.all([userFetch, libFetch, libSubjectsFetch]);
 
-                    // Update Home Stats
-                    const homeStats = document.querySelectorAll('.stat-card .val');
-                    if (homeStats.length >= 2) {
-                        homeStats[0].textContent = db.ai_requests + '/10';
-                        homeStats[1].textContent = userTasks.length + ' ta';
-                    }
+                // Process User Data
+                if (userRes.ok) {
+                    const result = await userRes.json();
+                    if (result.status === 'success') {
+                        const db = result.data;
+                        userTasks = db.deadlines || [];
 
-                    // Update Profile Stats
-                    const profileStats = document.querySelectorAll('#view-profile .stat-val');
-                    if (profileStats.length >= 2) {
-                        profileStats[0].textContent = db.referral_count || 0;
-                        profileStats[1].textContent = db.ai_requests + '/10';
-                    }
-
-                    // Update Plan Badge
-                    const badges = document.querySelectorAll('.plan-badge');
-                    badges.forEach(b => {
-                        if (db.is_premium) {
-                            b.className = 'plan-badge premium';
-                            b.textContent = 'PREMIUM';
-                        } else {
-                            b.className = 'plan-badge free';
-                            b.textContent = 'FREE PLAN';
+                        // Update Home Stats
+                        const homeStats = document.querySelectorAll('.stat-card .val');
+                        if (homeStats.length >= 2) {
+                            homeStats[0].textContent = db.ai_requests + '/10';
+                            homeStats[1].textContent = userTasks.length + ' ta';
                         }
-                    });
 
-                    renderHomeDeadlines();
-                    renderPlanner();
-                    initLibrary(); // Load library data
+                        // Update Profile Stats
+                        const profileStats = document.querySelectorAll('#view-profile .stat-val');
+                        if (profileStats.length >= 2) {
+                            profileStats[0].textContent = db.referral_count || 0;
+                            profileStats[1].textContent = db.ai_requests + '/10';
+                        }
+
+                        // Plan Badge
+                        const badges = document.querySelectorAll('.plan-badge');
+                        badges.forEach(b => {
+                            if (db.is_premium) { b.className = 'plan-badge premium'; b.textContent = 'PREMIUM'; }
+                            else { b.className = 'plan-badge free'; b.textContent = 'FREE PLAN'; }
+                        });
+
+                        renderHomeDeadlines();
+                        renderPlanner();
+
+                        // Populate Subjects from pre-loaded data if available
+                        // This part of the instruction implies subjects might come from user data,
+                        // but the original initLibrary fetches them separately.
+                        // For now, we'll assume libSubjectsFetch handles it.
+                        // if (db.lib_subjects) {
+                        //     populateSubjects(db.lib_subjects);
+                        // }
+                    }
                 }
+
+                // Process Library Data
+                if (libRes.ok) {
+                    const libData = await libRes.json();
+                    if (libData.status === 'success') {
+                        allMaterials = libData.materials;
+                        renderMaterials(allMaterials);
+                    }
+                } else {
+                    document.getElementById('lib-materials-list').innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">Materiallarni yuklab bo\'lmadi</div>';
+                }
+
+                // Process Library Subjects
+                if (libSubjectsRes.ok) {
+                    const subData = await libSubjectsRes.json();
+                    if (subData.status === 'success') {
+                        populateSubjects(subData.subjects);
+                    }
+                }
+
             } catch (e) {
                 console.error("Data fetch error:", e);
                 // If the fetch failed, show a full screen error with activation link
@@ -1308,29 +1336,18 @@
         let allMaterials = [];
         let activeSubject = 'all';
 
-        async function initLibrary() {
-            try {
-                // 1. Load Subjects
-                const subRes = await fetch(`${apiBase}/api/library/subjects?ngrok-skip-browser-warning=1`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                const subData = await subRes.json();
-                if (subData.status === 'success') {
-                    const filter = document.getElementById('lib-subjects-filter');
-                    subData.subjects.forEach(sub => {
-                        const btn = document.createElement('div');
-                        btn.className = 'action-btn';
-                        btn.textContent = sub;
-                        btn.onclick = (e) => loadLibrary(sub, e.target);
-                        filter.appendChild(btn);
-                    });
-                }
+        function populateSubjects(subjects) {
+            const filter = document.getElementById('lib-subjects-filter');
+            // Clear existing except "Barchasi"
+            filter.innerHTML = '<div class="action-btn active" onclick="loadLibrary(\'all\', this)">Barchasi</div>';
 
-                // 2. Load all materials initially
-                loadLibrary('all');
-            } catch (e) {
-                console.error("Library init error:", e);
-            }
+            subjects.forEach(sub => {
+                const btn = document.createElement('div');
+                btn.className = 'action-btn';
+                btn.textContent = sub;
+                btn.onclick = (e) => loadLibrary(sub, e.target);
+                filter.appendChild(btn);
+            });
         }
 
         async function loadLibrary(subject, el) {
