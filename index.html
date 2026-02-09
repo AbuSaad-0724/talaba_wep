@@ -1070,10 +1070,24 @@
                 }
             } catch (e) {
                 console.error("Data fetch error:", e);
-                // If on GitHub and no server URL, warn the user
-                if (window.location.hostname.includes('github.io') && !serverUrl) {
-                    tg.showAlert("Diqqat: Backend ulanmagan. Iltimos, SERVER_URL ni tekshiring.");
-                }
+                // If the fetch failed, show a full screen error with activation link
+                const homeView = document.getElementById('view-home');
+                homeView.innerHTML = `
+                    <div style="text-align:center; padding:50px 20px;">
+                        <div style="font-size:48px; margin-bottom:20px;">🌐</div>
+                        <h2 style="color:#ef4444; justify-content:center;">Ulanishda xato</h2>
+                        <p style="font-size:13px; color:#94a3b8; margin-bottom:25px;">Server (Ngrok) bilan aloqa o'rnatib bo'lmadi. Bu odatda xavfsizlik tekshiruvi tufayli sodir bo'ladi.</p>
+                        
+                        <div class="card glass" style="padding:20px; border-color:var(--bg-accent);">
+                            <p style="font-weight:600; font-size:14px; margin-bottom:10px;">Yechim:</p>
+                            <p style="font-size:12px; margin-bottom:15px; opacity:0.8;">Quyidagi tugmani bosing, ochilgan sahifada "Visit Site" ni tanlang va keyin botga qaytib kirib bu yerni yangilang.</p>
+                            <a href="${apiBase}/api/user/${user.id}?ngrok-skip-browser-warning=1" target="_blank" 
+                               style="display:block; background:var(--bg-accent-gradient); color:white; text-decoration:none; padding:12px; border-radius:12px; font-weight:600;">Ulanishni faollashtirish</a>
+                        </div>
+                        
+                        <button onclick="location.reload()" style="margin-top:30px; background:transparent; border:1px solid var(--border); color:var(--text-muted); padding:10px 20px; border-radius:12px;">Qayta yuklash</button>
+                    </div>
+                `;
             }
         }
         initApp();
