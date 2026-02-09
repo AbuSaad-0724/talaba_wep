@@ -1015,7 +1015,7 @@
 
             // Fetch Real Data from DB
             try {
-                const res = await fetch(`${apiBase}/api/user/${user.id}`, {
+                const res = await fetch(`${apiBase}/api/user/${user.id}?ngrok-skip-browser-warning=1`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 if (!res.ok) throw new Error("API error");
@@ -1120,7 +1120,7 @@
             history.scrollTop = history.scrollHeight;
 
             try {
-                const res = await fetch(`${apiBase}/api/chat`, {
+                const res = await fetch(`${apiBase}/api/chat?ngrok-skip-browser-warning=1`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

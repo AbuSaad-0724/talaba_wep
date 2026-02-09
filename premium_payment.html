@@ -306,8 +306,9 @@
 
             // Check status
             try {
-                console.log("Connecting to API:", `${apiBase}/api/payment/status/${user_id}`);
-                const res = await fetch(`${apiBase}/api/payment/status/${user_id}`, {
+                const url = `${apiBase}/api/payment/status/${user_id}?ngrok-skip-browser-warning=1`;
+                console.log("Connecting to API:", url);
+                const res = await fetch(url, {
                     headers: {
                         'ngrok-skip-browser-warning': 'true',
                         'Accept': 'application/json'
@@ -364,7 +365,7 @@
             const mock_url = "https://example.com/receipts/" + user_id + "_" + Date.now() + ".jpg";
 
             try {
-                const res = await fetch(`${apiBase}/api/payment/submit`, {
+                const res = await fetch(`${apiBase}/api/payment/submit?ngrok-skip-browser-warning=1`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
