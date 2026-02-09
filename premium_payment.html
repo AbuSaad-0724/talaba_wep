@@ -295,15 +295,22 @@
 
         async function init() {
             if (!user_id && !tg.initDataUnsafe?.user) {
-                document.getElementById('loading').textContent = "Telegram orqali kirshingiz kerak. (User ID topilmadi)";
+                document.getElementById('loading').textContent = "Telegram orqali kirishingiz kerak. (User ID topilmadi)";
                 return;
             }
+
+            if (!apiBase) {
+                document.getElementById('loading').textContent = "Xatolik: Server manzili (server param) topilmadi. Iltimos, botni qayta ishga tushiring.";
+                return;
+            }
+
             // Check status
             try {
+                console.log("Connecting to API:", `${apiBase}/api/payment/status/${user_id}`);
                 const res = await fetch(`${apiBase}/api/payment/status/${user_id}`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
-                if (!res.ok) throw new Error("API error");
+                if (!res.ok) throw new Error("API status: " + res.status);
                 const data = await res.json();
                 document.getElementById('loading').style.display = 'none';
 
@@ -313,7 +320,12 @@
                     renderStatus(data);
                 }
             } catch (e) {
-                document.getElementById('loading').textContent = "Xatolik yuz berdi. (Serverga ulanib bo'lmadi)";
+                document.getElementById('loading').innerHTML = `
+                    <div style="color:#ef4444; margin-bottom:10px;">Serverga ulanib bo'lmadi</div>
+                    <div style="font-size:12px; color:#94a3b8;">Manzil: ${apiBase}</div>
+                    <div style="font-size:11px; margin-top:10px; opacity:0.6;">Xato: ${e.message}</div>
+                    <button class="cta-btn" style="margin-top:20px; scale:0.8" onclick="init()">Qayta urinish</button>
+                `;
                 console.error("Init error:", e);
             }
         }

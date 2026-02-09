@@ -478,7 +478,9 @@
         // Stats
         async function loadStats() {
             try {
-                const res = await fetch(`${apiBase}/api/admin/stats`);
+                const res = await fetch(`${apiBase}/api/admin/stats`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 const data = await res.json();
                 if (data.status === 'success') {
                     document.getElementById('stat-total').innerText = data.data.total;
@@ -491,7 +493,9 @@
         // Users
         async function loadUsers() {
             try {
-                const res = await fetch(`${apiBase}/api/admin/users`);
+                const res = await fetch(`${apiBase}/api/admin/users`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 const data = await res.json();
                 if (data.status === 'success') {
                     allUsers = data.users;
@@ -500,6 +504,23 @@
             } catch (e) {
                 document.getElementById('users-list').innerHTML = '<p class="subtitle" style="text-align:center;">Failed to load users</p>';
             }
+        }
+
+        async function loadPayments() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/payments`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    renderPayments(data.payments);
+                }
+            } catch (e) { tg.showAlert("Payment load error"); }
+        }
+
+        function renderPayments(payments) {
+            const list = document.getElementById('users-list'); // Reusing the same container or create a new one? 
+            // For now let's just show how we'd handle it.
         }
 
         function renderUsers(list) {
@@ -541,7 +562,10 @@
             try {
                 await fetch(`${apiBase}/api/admin/user/action`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
                     body: JSON.stringify({ user_id: selectedUser, action: action })
                 });
                 tg.showAlert("Success!");
@@ -553,7 +577,9 @@
         // Settings
         async function loadSettings() {
             try {
-                const res = await fetch(`${apiBase}/api/admin/settings`);
+                const res = await fetch(`${apiBase}/api/admin/settings`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
                 const data = await res.json();
                 if (data.status === 'success') {
                     const s = data.settings;
@@ -568,7 +594,10 @@
         async function saveSetting(key, val) {
             await fetch(`${apiBase}/api/admin/settings`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
                 body: JSON.stringify({ key: key, value: val })
             });
         }
