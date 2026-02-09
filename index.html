@@ -1113,8 +1113,8 @@
             document.getElementById('profile-username-main').textContent = user.username ? '@' + user.username : 'No username';
             document.getElementById('profile-avatar-main').firstChild.textContent = (user.first_name || 'U')[0];
 
-            // Admin Check
-            if (user.id === 7794011784 || user.id === 12345678) {
+            // Admin Check (Dynamic from URL parameter)
+            if (urlParams.get('admin') === 'true') {
                 const adminItem = document.getElementById('admin-menu-item');
                 if (adminItem) adminItem.style.display = 'flex';
             }
