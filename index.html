@@ -963,8 +963,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="settings-item" onclick="window.location.href='admin_dashboard.html'" id="admin-menu-item"
-                    style="display:none;">
+                <div class="settings-item"
+                    onclick="window.location.href='admin_dashboard.html' + window.location.search + window.location.hash"
+                    id="admin-menu-item" style="display:none;">
                     <div class="settings-label"><i class="bi bi-shield-lock"></i> Admin Panel</div>
                     <i class="bi bi-chevron-right"></i>
                 </div>
@@ -1163,7 +1164,7 @@
         }
 
         function openPremium() {
-            window.location.href = 'premium_payment.html' + window.location.search;
+            window.location.href = 'premium_payment.html' + window.location.search + window.location.hash;
         }
 
     </script>
