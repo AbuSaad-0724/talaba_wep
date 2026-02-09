@@ -481,13 +481,51 @@
                 const res = await fetch(`${apiBase}/api/admin/stats`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    document.getElementById('stat-total').innerText = data.data.total;
-                    document.getElementById('stat-premium').innerText = data.data.premium;
-                    document.getElementById('stat-ai').innerText = data.data.today || 0;
+                const response = await res.json();
+                if (response.status === 'success') {
+                    const data = response.data;
+                    document.getElementById('stat-total').innerText = data.total;
+                    document.getElementById('stat-premium').innerText = data.premium;
+                    document.getElementById('stat-ai').innerText = data.ai_today || 0;
+
+                    if (data.top_features) {
+                        updateChart(data.top_features);
+                    }
                 }
             } catch (e) { console.error("Stats load error:", e); }
+        }
+
+        // Chart
+        let activityChart = null;
+        function updateChart(features) {
+            const ctx = document.getElementById('chart-activity').getContext('2d');
+            const labels = features.map(f => f.name.replace('btn_', '').replace('_', ' '));
+            const counts = features.map(f => f.count);
+
+            if (activityChart) activityChart.destroy();
+
+            activityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Foydalanish',
+                        data: counts,
+                        backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                        borderColor: '#6366f1',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
+                    }
+                }
+            });
         }
 
         // Users
