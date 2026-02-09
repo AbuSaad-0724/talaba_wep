@@ -20,6 +20,7 @@
             --accent: #6366f1;
             --accent-green: #10b981;
             --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
             --border: rgba(255, 255, 255, 0.06);
             --radius: 16px;
         }
@@ -39,6 +40,46 @@
             padding-bottom: 80px;
         }
 
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 1001;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { border-color: var(--accent-green); color: var(--accent-green); }
+        .toast.error { border-color: var(--accent-red); color: var(--accent-red); }
+
         /* Tabs */
         .tab-content {
             display: none;
@@ -46,42 +87,18 @@
             animation: fadeUp 0.3s ease;
         }
 
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content.active { display: block; }
 
         @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Typography */
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
+        h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+        h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
 
-        .subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
-        }
-
-        h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        /* Cars */
+        /* Cards */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -93,7 +110,7 @@
         /* Stats */
         .stats-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 24px;
         }
@@ -108,15 +125,8 @@
             gap: 4px;
         }
 
-        .stat-val {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
+        .stat-val { font-size: 24px; font-weight: 700; }
+        .stat-label { font-size: 12px; color: var(--text-muted); }
 
         .stat-card.highlight {
             background: linear-gradient(135deg, var(--accent), #4f46e5);
@@ -130,21 +140,13 @@
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: 0.2s;
         }
-
-        .user-row:last-child {
-            border: none;
-        }
-
-        .user-meta h4 {
-            font-size: 14px;
-            margin-bottom: 2px;
-        }
-
-        .user-meta p {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
+        .user-row:hover { background: rgba(255,255,255,0.02); padding-left: 8px; padding-right: 8px; margin: 0 -8px; border-radius: 8px; }
+        .user-row:last-child { border: none; }
+        .user-meta h4 { font-size: 14px; margin-bottom: 2px; }
+        .user-meta p { font-size: 11px; color: var(--text-muted); }
 
         .badge {
             font-size: 10px;
@@ -152,24 +154,13 @@
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.1);
         }
-
-        .badge.prem {
-            background: rgba(245, 158, 11, 0.2);
-            color: #fbbf24;
-        }
+        .badge.prem { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .badge.new { background: rgba(16, 185, 129, 0.2); color: #10b981; }
 
         /* Controls */
-        .control-group {
-            margin-bottom: 16px;
-        }
-
-        .control-label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
+        .control-group { margin-bottom: 16px; }
+        .control-label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+        
         .control-input,
         .control-select {
             width: 100%;
@@ -182,6 +173,7 @@
             font-size: 14px;
             outline: none;
         }
+        .control-input:focus { border-color: var(--accent); }
 
         .control-select {
             appearance: none;
@@ -208,11 +200,7 @@
             transition: 0.3s;
             cursor: pointer;
         }
-
-        .toggle-switch.active {
-            background: var(--accent);
-        }
-
+        .toggle-switch.active { background: var(--accent); }
         .toggle-knob {
             width: 20px;
             height: 20px;
@@ -223,10 +211,7 @@
             left: 2px;
             transition: 0.3s;
         }
-
-        .toggle-switch.active .toggle-knob {
-            transform: translateX(20px);
-        }
+        .toggle-switch.active .toggle-knob { transform: translateX(20px); }
 
         /* Buttons */
         .btn {
@@ -238,13 +223,13 @@
             cursor: pointer;
             font-size: 14px;
             margin-top: 8px;
+            transition: 0.2s;
         }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-danger { background: rgba(239,68,68,0.1); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
+        
         .btn-icon {
             width: 32px;
             height: 32px;
@@ -256,6 +241,7 @@
             color: var(--text-muted);
             cursor: pointer;
         }
+        .btn-icon:active { background: rgba(255,255,255,0.1); }
 
         /* Bottom Nav */
         .bottom-nav {
@@ -281,16 +267,10 @@
             color: var(--text-muted);
             opacity: 0.6;
             transition: 0.2s;
+            cursor: pointer;
         }
-
-        .nav-item.active {
-            opacity: 1;
-            color: var(--accent);
-        }
-
-        .nav-item i {
-            font-size: 20px;
-        }
+        .nav-item.active { opacity: 1; color: var(--accent); }
+        .nav-item i { font-size: 20px; }
 
         /* Modal */
         .modal-bg {
@@ -302,7 +282,7 @@
             align-items: flex-end;
             z-index: 200;
         }
-
+        .modal-bg.show { display: flex; }
         .modal-content {
             background: var(--bg-card);
             width: 100%;
@@ -312,25 +292,84 @@
             animation: slideUp 0.3s ease;
             border-top: 1px solid var(--border);
         }
-
         @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-            }
-
-            to {
-                transform: translateY(0);
-            }
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
+
+        /* Quick Actions Bar */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .quick-actions::-webkit-scrollbar { display: none; }
+        .quick-btn {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .quick-btn:active { background: rgba(255,255,255,0.1); }
+
+        /* Export Buttons */
+        .export-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .export-btn {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .export-btn:active { background: rgba(255,255,255,0.05); }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
     </style>
 </head>
 
 <body>
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <!-- OVERVIEW TAB -->
     <div id="tab-overview" class="tab-content active">
         <h1>Dashboard</h1>
         <p class="subtitle">System Overview & Stats</p>
+
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="refreshAll()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+            <button class="quick-btn" onclick="exportData('csv')"><i class="bi bi-filetype-csv"></i> Export CSV</button>
+            <button class="quick-btn" onclick="exportData('json')"><i class="bi bi-filetype-json"></i> Export JSON</button>
+        </div>
 
         <div class="stats-grid">
             <div class="stat-card highlight">
@@ -338,16 +377,16 @@
                 <div class="stat-label" style="color: rgba(255,255,255,0.7);">Total Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-val" id="stat-ai">...</div>
-                <div class="stat-label">AI Requests</div>
-            </div>
-            <div class="stat-card">
                 <div class="stat-val" id="stat-premium" style="color: #fbbf24;">...</div>
-                <div class="stat-label">Premium Users</div>
+                <div class="stat-label">Premium</div>
             </div>
             <div class="stat-card">
-                <div class="stat-val" id="stat-status" style="color: var(--accent-green);">Online</div>
-                <div class="stat-label">System Status</div>
+                <div class="stat-val" id="stat-new">...</div>
+                <div class="stat-label">New Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="stat-status" style="color: var(--accent-green);">●</div>
+                <div class="stat-label">Status</div>
             </div>
         </div>
 
@@ -355,21 +394,36 @@
             <h3>Activity Trend</h3>
             <canvas id="chart-activity" height="120"></canvas>
         </div>
+
+        <div class="card">
+            <h3>Quick Stats</h3>
+            <div id="quick-stats">Loading...</div>
+        </div>
     </div>
 
     <!-- USERS TAB -->
     <div id="tab-users" class="tab-content">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <h1>Users</h1>
-            <div class="btn-icon" onclick="loadUsers()"><i class="bi bi-arrow-clockwise"></i></div>
+            <div style="display: flex; gap: 8px;">
+                <div class="btn-icon" onclick="loadUsers()"><i class="bi bi-arrow-clockwise"></i></div>
+            </div>
         </div>
 
-        <input type="text" class="control-input" id="search-users" placeholder="Search users..." oninput="filterUsers()"
-            style="margin-bottom: 16px;">
+        <input type="text" class="control-input" id="search-users" placeholder="Search by name, username or ID..." 
+               oninput="debounceSearch(this.value)" style="margin-bottom: 12px;">
+
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button class="control-select" style="width: auto; flex: 1;" onclick="filterUsers('all')">All</button>
+            <button class="control-select" style="width: auto; flex: 1;" onclick="filterUsers('premium')">Premium</button>
+            <button class="control-select" style="width: auto; flex: 1;" onclick="filterUsers('new')">New</button>
+        </div>
 
         <div class="card" id="users-list">
-            <!-- Dynamic List -->
-            <p style="text-align: center; color: var(--text-muted);">Loading...</p>
+            <div class="empty-state">
+                <i class="bi bi-people"></i>
+                <p>Loading users...</p>
+            </div>
         </div>
     </div>
 
@@ -413,9 +467,14 @@
             </div>
         </div>
 
-        <button class="btn"
-            style="background: rgba(239,68,68,0.1); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3);"
-            onclick="if(confirm('Restart Bot?')) tg.showAlert('Restarting...')">
+        <div class="card">
+            <h3>System Info</h3>
+            <div id="system-info" style="font-size: 12px; color: var(--text-muted);">
+                Loading...
+            </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="restartSystem()">
             <i class="bi bi-power"></i> Restart System
         </button>
     </div>
@@ -427,24 +486,35 @@
             <p class="subtitle" id="modal-userid">ID: ...</p>
 
             <div style="display: grid; gap: 10px;">
-                <button class="btn btn-primary" onclick="doAction('premium_add')">Grant Premium (30 days)</button>
-                <button class="btn" style="background: var(--bg-input);" onclick="doAction('premium_remove')">Revoke
-                    Premium</button>
-                <button class="btn" style="background: rgba(239,68,68,0.1); color: var(--accent-red);"
-                    onclick="doAction('ban')">Ban User</button>
+                <button class="btn btn-primary" onclick="doAction('premium_add')">
+                    <i class="bi bi-star"></i> Grant Premium (30 days)
+                </button>
+                <button class="btn btn-outline" onclick="doAction('premium_remove')">
+                    <i class="bi bi-star-fill"></i> Revoke Premium
+                </button>
+                <button class="btn btn-outline" onclick="doAction('reset_usage')">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset Usage
+                </button>
+                <button class="btn btn-danger" onclick="doAction('ban')">
+                    <i class="bi bi-ban"></i> Ban User
+                </button>
             </div>
-            <button class="btn" style="background: transparent; margin-top: 10px;"
-                onclick="closeModal()">Cancel</button>
+            <button class="btn" style="background: transparent; margin-top: 16px;" onclick="closeModal()">
+                Cancel
+            </button>
         </div>
     </div>
 
     <!-- Navbar -->
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('overview', this)"><i
-                class="bi bi-grid-fill"></i><span>Overview</span></div>
-        <div class="nav-item" onclick="switchTab('users', this)"><i class="bi bi-people-fill"></i><span>Users</span>
+        <div class="nav-item active" onclick="switchTab('overview', this)">
+            <i class="bi bi-grid-fill"></i><span>Overview</span>
         </div>
-        <div class="nav-item" onclick="switchTab('control', this)"><i class="bi bi-sliders"></i><span>Control</span>
+        <div class="nav-item" onclick="switchTab('users', this)">
+            <i class="bi bi-people-fill"></i><span>Users</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('control', this)">
+            <i class="bi bi-sliders"></i><span>Control</span>
         </div>
     </div>
 
@@ -460,225 +530,293 @@
 
         let allUsers = [];
         let selectedUser = null;
+        let searchTimeout = null;
 
-        // Init
-        loadStats();
-        loadSettings();
+        // --- Utility Functions ---
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('show', show);
+        }
 
-        // Nav
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function debounceSearch(value) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadUsers(value), 500);
+        }
+
+        // --- Navigation ---
         function switchTab(tab, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
             el.classList.add('active');
+            
             if (tab === 'users') loadUsers();
-            if (tab === 'control') loadSettings();
+            if (tab === 'control') { loadSettings(); loadSystemInfo(); }
+            if (tab === 'overview') { loadOverview(); loadStats(); }
         }
 
-        // Stats
+        // --- Overview Tab ---
+        async function loadOverview() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/stats/overview`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                
+                document.getElementById('stat-total').textContent = data.total_users || 0;
+                document.getElementById('stat-premium').textContent = data.premium_users || 0;
+                document.getElementById('stat-new').textContent = data.new_today || 0;
+            } catch (e) {
+                console.error("Overview load error:", e);
+            }
+        }
+
         async function loadStats() {
             try {
-                const res = await fetch(`${apiBase}/api/admin/stats`, {
+                const res = await fetch(`${apiBase}/api/admin/stats/features?days=7`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 const response = await res.json();
                 if (response.status === 'success') {
                     const data = response.data;
-                    document.getElementById('stat-total').innerText = data.total;
-                    document.getElementById('stat-premium').innerText = data.premium;
-                    document.getElementById('stat-ai').innerText = data.ai_today || 0;
-
-                    if (data.top_features) {
-                        updateChart(data.top_features);
-                    }
-                }
-            } catch (e) { console.error("Stats load error:", e); }
-        }
-
-        // Chart
-        let activityChart = null;
-        function updateChart(features) {
-            const ctx = document.getElementById('chart-activity').getContext('2d');
-            const labels = features.map(f => f.name.replace('btn_', '').replace('_', ' '));
-            const counts = features.map(f => f.count);
-
-            if (activityChart) activityChart.destroy();
-
-            activityChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Foydalanish',
-                        data: counts,
-                        backgroundColor: 'rgba(99, 102, 241, 0.5)',
-                        borderColor: '#6366f1',
-                        borderWidth: 1,
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-                    }
-                }
-            });
-        }
-
-        // Users
-        async function loadUsers() {
-            try {
-                const res = await fetch(`${apiBase}/api/admin/users`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    allUsers = data.users;
-                    renderUsers(allUsers);
+                    document.getElementById('quick-stats').innerHTML = `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div><strong>AI Chats:</strong> ${data.ai_chats || 0}</div>
+                            <div><strong>Referats:</strong> ${data.referats || 0}</div>
+                            <div><strong>Tests:</strong> ${data.tests || 0}</div>
+                            <div><strong>PPTs:</strong> ${data.ppts || 0}</div>
+                        </div>
+                    `;
                 }
             } catch (e) {
-                document.getElementById('users-list').innerHTML = '<p class="subtitle" style="text-align:center;">Failed to load users</p>';
+                document.getElementById('quick-stats').innerHTML = '<p style="color: var(--text-muted);">Unable to load stats</p>';
             }
         }
 
-        async function loadPayments() {
+        async function loadSystemStatus() {
             try {
-                const res = await fetch(`${apiBase}/api/admin/payments`, {
+                const res = await fetch(`${apiBase}/api/admin/system/status`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 const data = await res.json();
-                if (data.status === 'success') {
-                    renderPayments(data.payments);
-                }
-            } catch (e) { tg.showAlert("Payment load error"); }
+                document.getElementById('stat-status').textContent = data.status === 'healthy' ? '●' : '○';
+            } catch (e) {
+                document.getElementById('stat-status').textContent = '○';
+            }
         }
 
-        function renderPayments(payments) {
-            const list = document.getElementById('users-list'); // Reusing the same container or create a new one? 
-            // For now let's just show how we'd handle it.
-        }
-
-        function renderUsers(list) {
-            const container = document.getElementById('users-list');
-            container.innerHTML = '';
-            list.slice(0, 50).forEach(u => {
-                const html = `
-                <div class="user-row" onclick="openModal('${u.id}', '${u.name}')">
-                    <div class="user-meta">
-                        <h4>${u.name} ${u.is_premium ? '<span class="badge prem">PRO</span>' : ''}</h4>
-                        <p>ID: ${u.id} • ${u.username || 'No Username'}</p>
+        // --- Users Tab ---
+        async function loadUsers(search = null) {
+            showLoading(true);
+            try {
+                const res = await fetch(`${apiBase}/api/admin/users?search=${encodeURIComponent(search || '')}`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                
+                allUsers = data.users || [];
+                renderUsers(allUsers);
+            } catch (e) {
+                console.error("Users load error:", e);
+                document.getElementById('users-list').innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <p>Error loading users</p>
                     </div>
-                    <div class="btn-icon"><i class="bi bi-three-dots-vertical"></i></div>
-                </div>`;
-                container.innerHTML += html;
-            });
+                `;
+            }
+            showLoading(false);
         }
 
-        function filterUsers() {
-            const q = document.getElementById('search-users').value.toLowerCase();
-            const filtered = allUsers.filter(u => u.name.toLowerCase().includes(q) || String(u.id).includes(q));
-            renderUsers(filtered);
+        function renderUsers(users) {
+            const container = document.getElementById('users-list');
+            
+            if (!users || users.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-people"></i>
+                        <p>No users found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = users.map(u => `
+                <div class="user-row" onclick="openUserModal(${u.id}, '${u.name}', '@${u.username || 'none'}')">
+                    <div class="user-meta">
+                        <h4>${u.name || 'Unknown'}</h4>
+                        <p>@${u.username || 'none'} • ${u.joined || ''}</p>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        ${u.premium ? '<span class="badge prem">PREMIUM</span>' : ''}
+                        <span class="badge">ID: ${u.id}</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Modal
-        function openModal(id, name) {
-            selectedUser = id;
-            document.getElementById('modal-username').innerText = name;
-            document.getElementById('modal-userid').innerText = 'ID: ' + id;
-            document.getElementById('user-modal').style.display = 'flex';
+        function filterUsers(type) {
+            if (type === 'all') {
+                renderUsers(allUsers);
+            } else if (type === 'premium') {
+                renderUsers(allUsers.filter(u => u.premium));
+            } else if (type === 'new') {
+                const today = new Date().toISOString().split('T')[0];
+                renderUsers(allUsers.filter(u => u.joined && u.joined.startsWith(today)));
+            }
         }
+
+        function openUserModal(id, name, username) {
+            selectedUser = { id, name, username };
+            document.getElementById('modal-username').textContent = name;
+            document.getElementById('modal-userid').textContent = `${username} • ID: ${id}`;
+            document.getElementById('user-modal').classList.add('show');
+        }
+
         function closeModal() {
-            document.getElementById('user-modal').style.display = 'none';
+            document.getElementById('user-modal').classList.remove('show');
             selectedUser = null;
         }
+
         async function doAction(action) {
             if (!selectedUser) return;
-            tg.showAlert("Processing...");
+            
+            showLoading(true);
             try {
-                await fetch(`${apiBase}/api/admin/user/action`, {
+                const res = await fetch(`${apiBase}/api/admin/quick-action`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true'
-                    },
-                    body: JSON.stringify({ user_id: selectedUser, action: action })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: selectedUser.id,
+                        action: action,
+                        value: action === 'premium_add' ? '30' : null
+                    })
                 });
-                tg.showAlert("Success!");
-                closeModal();
-                loadUsers();
-            } catch (e) { tg.showAlert("Error"); }
+                const data = await res.json();
+                
+                showToast(data.message || data.detail, data.status === 'success' ? 'success' : 'error');
+                if (data.status === 'success') {
+                    closeModal();
+                    loadUsers();
+                }
+            } catch (e) {
+                showToast('Action failed', 'error');
+            }
+            showLoading(false);
         }
 
-        // Settings
+        // --- Export ---
+        async function exportData(format) {
+            showLoading(true);
+            try {
+                const res = await fetch(`${apiBase}/api/admin/users/export?format=${format}`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `users_export.${format}`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                showToast('Export complete!');
+            } catch (e) {
+                showToast('Export failed', 'error');
+            }
+            showLoading(false);
+        }
+
+        // --- Settings ---
         async function loadSettings() {
             try {
                 const res = await fetch(`${apiBase}/api/admin/settings`, {
                     headers: { 'ngrok-skip-browser-warning': 'true' }
                 });
                 const data = await res.json();
-                if (data.status === 'success') {
-                    const s = data.settings;
-                    document.getElementById('setting-provider').value = s.ai_provider;
-                    document.getElementById('setting-limit').value = s.daily_limit;
-                    setToggle('toggle-ai', s.ai_enabled === 'true');
-                    setToggle('toggle-maint', s.maintenance === 'true');
+                
+                if (data.settings) {
+                    document.getElementById('setting-provider').value = data.settings.ai_provider || 'gemini';
+                    document.getElementById('setting-limit').value = data.settings.daily_limit || 10;
+                    
+                    document.getElementById('toggle-ai').classList.toggle('active', data.settings.ai_enabled !== 'false');
+                    document.getElementById('toggle-maint').classList.toggle('active', data.settings.maintenance === 'true');
                 }
-            } catch (e) { }
+            } catch (e) {
+                console.error("Settings load error:", e);
+            }
         }
 
-        async function saveSetting(key, val) {
-            await fetch(`${apiBase}/api/admin/settings`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({ key: key, value: val })
-            });
-        }
-
-        function setToggle(id, active) {
-            const el = document.getElementById(id);
-            if (active) el.classList.add('active'); else el.classList.remove('active');
+        async function saveSetting(key, value) {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, value })
+                });
+                const data = await res.json();
+                showToast(data.message || 'Saved');
+            } catch (e) {
+                showToast('Failed to save', 'error');
+            }
         }
 
         async function toggleSetting(key) {
-            // Determine current state based on UI class
-            const elId = key === 'ai_enabled' ? 'toggle-ai' : 'toggle-maint';
-            const el = document.getElementById(elId);
-            const isNowActive = !el.classList.contains('active');
-
-            // Toggle UI immediately (optimistic)
-            setToggle(elId, isNowActive);
-
-            // Save
-            await saveSetting(key, isNowActive ? 'true' : 'false');
+            const el = document.getElementById('toggle-' + key.split('_')[0]);
+            const current = el.classList.contains('active');
+            await saveSetting(key, current ? 'false' : 'true');
+            el.classList.toggle('active');
         }
 
-        // Chart
-        new Chart(document.getElementById('chart-activity'), {
-            type: 'line',
-            data: {
-                labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                datasets: [{
-                    label: 'Users',
-                    data: [12, 19, 15, 25, 22, 30, 45],
-                    borderColor: '#6366f1',
-                    tension: 0.4,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
+        async function loadSystemInfo() {
+            try {
+                const res = await fetch(`${apiBase}/api/admin/system/status`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                
+                document.getElementById('system-info').innerHTML = `
+                    <div style="display: grid; gap: 8px;">
+                        <div><strong>CPU:</strong> ${data.cpu_percent}%</div>
+                        <div><strong>Memory:</strong> ${data.memory_mb} MB (${data.memory_percent}%)</div>
+                        <div><strong>Disk:</strong> ${data.disk_percent}%</div>
+                        <div><strong>Uptime:</strong> ${data.uptime_formatted}</div>
+                        <div><strong>Status:</strong> ${data.status}</div>
+                    </div>
+                `;
+            } catch (e) {
+                document.getElementById('system-info').innerHTML = '<p>Unable to load system info</p>';
             }
-        });
+        }
 
+        function refreshAll() {
+            loadOverview();
+            loadStats();
+            loadSystemStatus();
+            loadUsers();
+            loadSettings();
+            showToast('Refreshed!');
+        }
+
+        function restartSystem() {
+            if (confirm('Restart the bot system?')) {
+                showToast('Restarting...', 'success');
+                // In production, this would trigger a system restart
+            }
+        }
+
+        // --- Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOverview();
+            loadStats();
+            loadSystemStatus();
+        });
     </script>
 </body>
-
 </html>
