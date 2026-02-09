@@ -614,6 +614,106 @@
             font-weight: 700;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            background: #1e293b;
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalScale {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .planner-task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 10px;
+        }
+
+        .planner-task-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--bg-accent);
+        }
+
+        .planner-task-info {
+            flex: 1;
+        }
+
+        .delete-task-btn {
+            color: #ef4444;
+            opacity: 0.6;
+            cursor: pointer;
+            padding: 5px;
+        }
+
         /* Profile View */
         .profile-card-new {
             text-align: center;
@@ -849,31 +949,49 @@
 
         <!-- PLANNER VIEW -->
         <div id="view-planner" class="view">
-            <h1>Rejalashtiruvchi</h1>
-            <p class="subtitle">O'quv jarayonini tartibga soling</p>
-
-            <div class="calendar-strip">
-                <div class="cal-day"><span class="day-name">Du</span><span class="day-num">9</span></div>
-                <div class="cal-day active"><span class="day-name">Se</span><span class="day-num">10</span></div>
-                <div class="cal-day"><span class="day-name">Cho</span><span class="day-num">11</span></div>
-                <div class="cal-day"><span class="day-name">Pa</span><span class="day-num">12</span></div>
-                <div class="cal-day"><span class="day-name">Ju</span><span class="day-num">13</span></div>
-                <div class="cal-day"><span class="day-name">Sha</span><span class="day-num">14</span></div>
-                <div class="cal-day"><span class="day-name">Yak</span><span class="day-num">15</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <h1>Rejalashtiruvchi</h1>
+                    <p class="subtitle">O'quv jarayonini tartibga soling</p>
+                </div>
+                <button class="send-btn" onclick="openModal('add-task-modal')"
+                    style="border-radius:15px; width:45px; height:45px;">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
             </div>
 
-            <h2>Vazifalar</h2>
-            <div style="margin-bottom: 20px;">
-                <div class="deadline-card glass">
-                    <div class="deadline-info">
-                        <div class="deadline-title">Oliy matematika test</div>
-                        <div class="deadline-sub">1-bo'lim bo'yicha yakuniy</div>
-                    </div>
-                    <i class="bi bi-check-circle" style="color:var(--text-muted); font-size:20px;"></i>
+            <div class="calendar-strip" id="calendar-strip">
+                <!-- Will be populated by JS -->
+            </div>
+
+            <h2>Vazifalar ro'yxati</h2>
+            <div id="planner-tasks-list" style="margin-bottom: 20px;">
+                <div style="text-align:center; padding:40px; color:var(--text-muted); font-size:14px;">
+                    <i class="bi bi-clipboard-x"
+                        style="display:block; font-size:32px; margin-bottom:10px; opacity:0.3;"></i>
+                    Vazifalar topilmadi
                 </div>
-                <button class="cta-btn"
-                    style="background: var(--bg-accent-gradient); box-shadow: 0 5px 15px rgba(99,102,241,0.2);">
-                    <i class="bi bi-plus-lg"></i> Yangi vazifa qo'shish
+            </div>
+        </div>
+
+        <!-- MODALS -->
+        <div id="add-task-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 style="margin:0">Yangi vazifa</h2>
+                    <i class="bi bi-x-lg" style="cursor:pointer" onclick="closeModal('add-task-modal')"></i>
+                </div>
+                <div class="input-group">
+                    <label>Vazifa nomi</label>
+                    <input type="text" id="task-title" placeholder="Masalan: Matematika mustaqil ish">
+                </div>
+                <div class="input-group">
+                    <label>Muddat (Sana)</label>
+                    <input type="date" id="task-date">
+                </div>
+                <button class="cta-btn" onclick="addNewTask()"
+                    style="width:100%; padding:14px; background:var(--bg-accent-gradient); color:white; border:none; border-radius:14px; font-weight:700; font-size:15px; margin-top:10px;">
+                    Saqlash
                 </button>
             </div>
         </div>
@@ -885,36 +1003,21 @@
 
             <div class="search-bar">
                 <i class="bi bi-search"></i>
-                <input type="text" placeholder="Kitob, mavzu yoki faylni qidiring...">
+                <input type="text" id="lib-search" placeholder="Kitob yoki mavzuni qidiring..."
+                    oninput="filterLibrary()">
             </div>
 
-            <div class="lib-grid">
-                <div class="lib-item"><span class="lib-icon">📚</span><b>Kitoblar</b>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">120+ fayl</div>
-                </div>
-                <div class="lib-item"><span class="lib-icon">📝</span><b>Konspektlar</b>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">50+ mavzu</div>
-                </div>
-                <div class="lib-item"><span class="lib-icon">🎥</span><b>Videolar</b>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">30+ darslik</div>
-                </div>
-                <div class="lib-item" style="border-color: var(--color-blue);"><span
-                        class="lib-icon">🔗</span><b>Manbalar</b>
-                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Foydali saytlar</div>
-                </div>
+            <div class="action-row" id="lib-subjects-filter"
+                style="margin-bottom:20px; overflow-x: auto; scrollbar-width: none;">
+                <div class="action-btn active" onclick="loadLibrary('all', this)">Barchasi</div>
             </div>
 
-            <h2 style="margin-top:25px;">Tavsiya etiladi</h2>
-            <div class="card glass" style="padding:15px; display:flex; align-items:center; gap:12px;">
-                <div
-                    style="width:40px; height:50px; background:var(--color-blue); border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:20px;">
-                    <i class="bi bi-file-pdf"></i>
+            <div id="lib-materials-list" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+                <!-- Materials will be populated by JS -->
+                <div style="text-align:center; padding:40px; color:var(--text-muted);">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p style="margin-top:10px;">Yuklanmoqda...</p>
                 </div>
-                <div style="flex:1;">
-                    <div style="font-weight:600; font-size:14px;">Ingliz tili (Intermediate)</div>
-                    <div style="font-size:11px; color:var(--text-muted);">PDF • 12.4 MB</div>
-                </div>
-                <i class="bi bi-cloud-download" style="font-size:20px; color:var(--bg-accent);"></i>
             </div>
         </div>
 
@@ -931,7 +1034,8 @@
                     style="display:inline-block; font-size:12px; cursor:pointer;">Free User</div>
 
                 <div class="stats-row">
-                    <div class="stat-item"><span class="stat-val">45</span><span class="stat-lbl">Points</span></div>
+                    <div class="stat-item"><span class="stat-val">45</span><span class="stat-lbl">Points</span>
+                    </div>
                     <div class="stat-item"><span class="stat-val">3/10</span><span class="stat-lbl">AI Limit</span>
                     </div>
                 </div>
@@ -999,6 +1103,8 @@
         console.log("CRITICAL DEBUG: serverUrl from query:", serverUrl);
         console.log("CRITICAL DEBUG: apiBase:", apiBase);
 
+        let userTasks = [];
+
         async function initApp() {
             // Initial UI from Telegram data
             document.getElementById('header-name').textContent = user.first_name;
@@ -1022,12 +1128,13 @@
                 const result = await res.json();
                 if (result.status === 'success') {
                     const db = result.data;
+                    userTasks = db.deadlines || [];
 
                     // Update Home Stats
-                    const homeStats = document.querySelectorAll('#view-home .stat-val');
+                    const homeStats = document.querySelectorAll('.stat-card .val');
                     if (homeStats.length >= 2) {
                         homeStats[0].textContent = db.ai_requests + '/10';
-                        homeStats[1].textContent = db.deadlines.length + ' ta';
+                        homeStats[1].textContent = userTasks.length + ' ta';
                     }
 
                     // Update Profile Stats
@@ -1049,24 +1156,9 @@
                         }
                     });
 
-                    // Update Deadlines Summary
-                    if (db.deadlines && db.deadlines.length > 0) {
-                        const dBox = document.getElementById('deadlines-summary');
-                        let html = '';
-                        db.deadlines.forEach(d => {
-                            html += `
-                                <div class="deadline-card urgent">
-                                    <div class="deadline-info">
-                                        <div class="deadline-title">${d.title}</div>
-                                        <div class="deadline-sub">Muddati: ${d.due.split('T')[0]}</div>
-                                    </div>
-                                    <div class="days-badge red">Yaqinda</div>
-                                </div>
-                            `;
-                        });
-                        html += `<button style="width:100%; padding:12px; background:transparent; border:1px solid var(--border); color:var(--text-muted); border-radius:12px; font-size:13px;" onclick="switchView('planner')">Barchasi →</button>`;
-                        dBox.innerHTML = html;
-                    }
+                    renderHomeDeadlines();
+                    renderPlanner();
+                    initLibrary(); // Load library data
                 }
             } catch (e) {
                 console.error("Data fetch error:", e);
@@ -1091,6 +1183,223 @@
             }
         }
         initApp();
+
+        function renderHomeDeadlines() {
+            const dBox = document.getElementById('deadlines-summary');
+            if (!userTasks.length) return;
+
+            let html = '';
+            userTasks.slice(0, 3).forEach(d => {
+                html += `
+                    <div class="deadline-card urgent">
+                        <div class="deadline-info">
+                            <div class="deadline-title">${d.title}</div>
+                            <div class="deadline-sub">Muddati: ${d.due.split('T')[0]}</div>
+                        </div>
+                        <div class="days-badge red">Yaqinda</div>
+                    </div>
+                `;
+            });
+            if (userTasks.length > 3) {
+                html += `<button style="width:100%; padding:12px; background:transparent; border:1px solid var(--border); color:var(--text-muted); border-radius:12px; font-size:13px;" onclick="switchView('planner')">Barchasi →</button>`;
+            }
+            dBox.innerHTML = html;
+        }
+
+        // Planner Rendering
+        function renderPlanner() {
+            // 1. Calendar
+            const cal = document.getElementById('calendar-strip');
+            const now = new Date();
+            let calHtml = '';
+            const daysShort = ['Yak', 'Du', 'Se', 'Cho', 'Pa', 'Ju', 'Sha'];
+
+            for (let i = 0; i < 7; i++) {
+                let d = new Date();
+                d.setDate(now.getDate() + i);
+                const isActive = i === 0 ? 'active' : '';
+                calHtml += `
+                    <div class="cal-day ${isActive}">
+                        <span class="day-name">${daysShort[d.getDay()]}</span>
+                        <span class="day-num">${d.getDate()}</span>
+                    </div>
+                `;
+            }
+            cal.innerHTML = calHtml;
+
+            // 2. Tasks
+            const taskContainer = document.getElementById('planner-tasks-list');
+            if (!userTasks.length) {
+                taskContainer.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted); font-size:14px;"><i class="bi bi-clipboard-x" style="display:block; font-size:32px; margin-bottom:10px; opacity:0.3;"></i>Vazifalar topilmadi</div>';
+                return;
+            }
+
+            let tasksHtml = '';
+            userTasks.forEach(task => {
+                tasksHtml += `
+                    <div class="planner-task-item">
+                        <input type="radio" onclick="deleteTask(${task.id})">
+                        <div class="planner-task-info">
+                            <div style="font-weight:600; font-size:14px;">${task.title}</div>
+                            <div style="font-size:11px; color:var(--text-muted);">${task.due.split('T')[0]}</div>
+                        </div>
+                        <i class="bi bi-trash3 delete-task-btn" onclick="deleteTask(${task.id})"></i>
+                    </div>
+                `;
+            });
+            taskContainer.innerHTML = tasksHtml;
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        async function addNewTask() {
+            const title = document.getElementById('task-title').value;
+            const date = document.getElementById('task-date').value;
+
+            if (!title || !date) {
+                tg.showAlert("Iltimos, barcha maydonlarni to'ldiring");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${apiBase}/api/deadlines/add?ngrok-skip-browser-warning=1`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                    body: JSON.stringify({ user_id: user.id, title: title, due_date: date })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    tg.HapticFeedback.notificationOccurred('success');
+                    closeModal('add-task-modal');
+                    document.getElementById('task-title').value = '';
+                    initApp(); // Refresh
+                }
+            } catch (e) {
+                tg.showAlert("Serverga ulanib bo'lmadi");
+            }
+        }
+
+        async function deleteTask(id) {
+            if (!confirm("Vazifani o'chirmoqchimisiz?")) return;
+
+            try {
+                const res = await fetch(`${apiBase}/api/deadlines/delete?ngrok-skip-browser-warning=1`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                    body: JSON.stringify({ deadline_id: id })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    tg.HapticFeedback.impactOccurred('medium');
+                    initApp(); // Refresh
+                }
+            } catch (e) {
+                tg.showAlert("O'chirishda xatolik");
+            }
+        }
+
+        // --- Library Logic ---
+        let allMaterials = [];
+        let activeSubject = 'all';
+
+        async function initLibrary() {
+            try {
+                // 1. Load Subjects
+                const subRes = await fetch(`${apiBase}/api/library/subjects?ngrok-skip-browser-warning=1`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                const subData = await subRes.json();
+                if (subData.status === 'success') {
+                    const filter = document.getElementById('lib-subjects-filter');
+                    subData.subjects.forEach(sub => {
+                        const btn = document.createElement('div');
+                        btn.className = 'action-btn';
+                        btn.textContent = sub;
+                        btn.onclick = (e) => loadLibrary(sub, e.target);
+                        filter.appendChild(btn);
+                    });
+                }
+
+                // 2. Load all materials initially
+                loadLibrary('all');
+            } catch (e) {
+                console.error("Library init error:", e);
+            }
+        }
+
+        async function loadLibrary(subject, el) {
+            activeSubject = subject;
+            if (el) {
+                document.querySelectorAll('#lib-subjects-filter .action-btn').forEach(b => b.classList.remove('active'));
+                el.classList.add('active');
+            }
+
+            const list = document.getElementById('lib-materials-list');
+            list.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);"><p>Yuklanmoqda...</p></div>';
+
+            try {
+                let url = `${apiBase}/api/library/materials?ngrok-skip-browser-warning=1`;
+                if (subject !== 'all') url += `&subject=${encodeURIComponent(subject)}`;
+
+                const res = await fetch(url, { headers: { 'ngrok-skip-browser-warning': 'true' } });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    allMaterials = data.materials;
+                    renderMaterials(allMaterials);
+                }
+            } catch (e) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444;">Xatolik yuz berdi</div>';
+            }
+        }
+
+        function renderMaterials(materials) {
+            const list = document.getElementById('lib-materials-list');
+            if (materials.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Materiallar topilmadi</div>';
+                return;
+            }
+
+            let html = '';
+            materials.forEach(m => {
+                let icon = 'bi-file-earmark-text';
+                let color = 'var(--bg-accent)';
+                if (m.type === 'pdf') { icon = 'bi-file-pdf'; color = '#ef4444'; }
+                if (m.type === 'video') { icon = 'bi-play-circle'; color = '#10b981'; }
+                if (m.type === 'audio') { icon = 'bi-music-note-beamed'; color = '#3b82f6'; }
+
+                html += `
+                    <div class="stat-card glass" style="padding:15px; display:flex; align-items:center; gap:12px; cursor:pointer;" onclick="window.open('${m.url}', '_blank')">
+                        <div style="width:40px; height:45px; background:${color}33; color:${color}; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px;">
+                            <i class="bi ${icon}"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600; font-size:14px; margin-bottom:2px;">${m.title}</div>
+                            <div style="font-size:11px; color:var(--text-muted); display:flex; gap:8px;">
+                                <span>${m.subject}</span> • <span>${m.duration || 'Noma\'lum'}</span>
+                            </div>
+                        </div>
+                        <i class="bi bi-cloud-arrow-down" style="font-size:20px; color:var(--text-muted);"></i>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function filterLibrary() {
+            const query = document.getElementById('lib-search').value.toLowerCase();
+            const filtered = allMaterials.filter(m =>
+                m.title.toLowerCase().includes(query) ||
+                m.subject.toLowerCase().includes(query) ||
+                (m.desc && m.desc.toLowerCase().includes(query))
+            );
+            renderMaterials(filtered);
+        }
 
         // View Navigation
         function switchView(viewId, el) {
